@@ -72,19 +72,30 @@ impl YieldCurvePointIdentity {
     /// 规范键：身份的稳定文本投影（字段顺序固定，`vintage` 缺失渲染为 `-`）。
     ///
     /// 同一身份 MUST 得到同一键；不同身份 MUST 得到不同键。
+    /// 令牌中的百分号、分号和等号按百分号编码；实值 vintage `-` 编为 `%2D`。
     #[must_use]
     pub fn canonical_key(&self) -> String {
         format!(
             "source={};series={};currency={};valuation_date={};maturity={};curve_kind={};vintage={}",
-            self.source.as_str(),
-            self.series.as_str(),
-            self.currency.as_str(),
+            escape_code(self.source.as_str()),
+            escape_code(self.series.as_str()),
+            escape_code(self.currency.as_str()),
             self.valuation_date.to_iso_string(),
             self.maturity.label(),
             self.curve_kind.label(),
-            self.vintage.as_ref().map_or("-", |v| v.as_str()),
+            self.vintage.as_ref().map_or_else(|| "-".into(), |v| {
+                if v.as_str() == "-" { "%2D".into() } else { escape_code(v.as_str()) }
+            }),
         )
     }
+}
+
+/// 转义标签分隔符与转义符，保留普通令牌的既有文本形态。
+fn escape_code(value: &str) -> String {
+    value
+        .replace('%', "%25")
+        .replace(';', "%3B")
+        .replace('=', "%3D")
 }
 
 #[cfg(test)]
@@ -148,6 +159,33 @@ mod tests {
         let mut other = identity();
         other.vintage = Some(code("v2"));
         assert_ne!(other.canonical_key(), base, "vintage 必须参与身份");
+    }
+
+    #[test]
+    fn delimiter_and_escape_tokens_cannot_collide() {
+        let mut left = identity();
+        left.source = code("a;series=b");
+        left.series = code("c");
+        let mut right = identity();
+        right.source = code("a");
+        right.series = code("b;series=c");
+        assert_ne!(left.canonical_key(), right.canonical_key());
+
+        right = left.clone();
+        right.source = code("a%3Bseries%3Db");
+        assert_ne!(left.canonical_key(), right.canonical_key());
+    }
+
+    #[test]
+    fn literal_vintage_placeholder_is_not_missing_vintage() {
+        let absent = identity();
+        let mut literal = absent.clone();
+        literal.vintage = Some(code("-"));
+        assert_ne!(absent.canonical_key(), literal.canonical_key());
+        literal.vintage = Some(code("%2D"));
+        let mut dash = absent.clone();
+        dash.vintage = Some(code("-"));
+        assert_ne!(literal.canonical_key(), dash.canonical_key());
     }
 
     #[test]
