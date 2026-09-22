@@ -76,13 +76,22 @@ struct FixtureIdentity {
 /// - JSON 结构不符（未知字段 / 缺字段 / 类型不符）→ [`YieldCurveError::Invalid`]
 /// - 未标注 `_synthetic = true`、文档类型不符、令牌未知、取值歧义
 ///   → [`YieldCurveError::SemanticallyRejected`]
-/// - 取值既非数值也未给具名原因 → [`YieldCurveError::Missing`]
+/// - 缺少非空白 `_note`，或取值既非数值也未给具名原因 → [`YieldCurveError::Missing`]
 /// - 批内重复身份 / 派生点不完整 → [`YieldCurveError::SemanticallyRejected`]
 pub fn parse_yield_curve_batch(input: &str) -> YieldCurveResult<YieldCurveBatch> {
     let document: FixtureDocument = serde_json::from_str(input).map_err(json_error)?;
     if !document._synthetic {
         return Err(YieldCurveError::SemanticallyRejected(
             "夹具必须显式标注 \"_synthetic\": true；未标注来源的输入不得当作源事实".into(),
+        ));
+    }
+    if document
+        ._note
+        .as_deref()
+        .map_or(true, |note| note.trim().is_empty())
+    {
+        return Err(YieldCurveError::Missing(
+            "合成夹具必须提供非空白 _note 说明".into(),
         ));
     }
     if document.kind != DOCUMENT_KIND {
@@ -290,6 +299,30 @@ mod tests {
     }
 
     #[test]
+    fn fixture_note_must_be_present_and_nonblank() {
+        let original: serde_json::Value = serde_json::from_str(OK).expect("合成夹具");
+        for note in [
+            None,
+            Some(serde_json::Value::Null),
+            Some("".into()),
+            Some(" \t\n".into()),
+        ] {
+            let mut document = original.clone();
+            let object = document.as_object_mut().expect("对象");
+            object.remove("_note");
+            if let Some(note) = note {
+                object.insert("_note".into(), note);
+            }
+            assert_eq!(
+                parse_yield_curve_batch(&document.to_string())
+                    .expect_err("缺少说明必须拒绝")
+                    .kind(),
+                crate::YieldCurveErrorKind::Missing
+            );
+        }
+    }
+
+    #[test]
     fn unknown_and_missing_fields_are_rejected_atomically() {
         let unknown = OK.replace(
             "\"unit\": \"percent\",",
@@ -355,7 +388,7 @@ mod tests {
         let first = r#"{"source":"treasury","series":"DS06","currency":"USD","valuation_date":"2026-08-14","maturity":"10Y","curve_kind":"nominal","rate_percent":4.25,"origin":"official","convention":"act365f"}"#;
         let second = r#"{"source":"treasury","series":"DS06","currency":"USD","valuation_date":"2026-08-14","maturity":"10Y","curve_kind":"nominal","rate_percent":4.30,"origin":"official","convention":"act365f"}"#;
         let duplicate = format!(
-            r#"{{"_synthetic":true,"kind":"kernel_fixture","frequency":"daily","unit":"percent","points":[{first},{second}]}}"#
+            r#"{{"_synthetic":true,"_note":"合成测试样本","kind":"kernel_fixture","frequency":"daily","unit":"percent","points":[{first},{second}]}}"#
         );
         assert_eq!(
             parse_yield_curve_batch(&duplicate)
@@ -368,7 +401,7 @@ mod tests {
     #[test]
     fn incomplete_derived_point_in_fixture_is_rejected() {
         let incomplete = r#"{
-          "_synthetic": true, "kind": "kernel_fixture",
+          "_synthetic": true, "_note": "合成测试样本", "kind": "kernel_fixture",
           "frequency": "daily", "unit": "percent",
           "points": [{
             "source": "treasury", "series": "DS06", "currency": "USD",
@@ -387,7 +420,7 @@ mod tests {
     #[test]
     fn complete_derived_point_with_vintage_parses() {
         let complete = r#"{
-          "_synthetic": true, "kind": "kernel_fixture",
+          "_synthetic": true, "_note": "合成测试样本", "kind": "kernel_fixture",
           "frequency": "daily", "unit": "percent",
           "points": [{
             "source": "treasury", "series": "DS06", "currency": "USD",

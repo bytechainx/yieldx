@@ -51,7 +51,7 @@
 
 | 项 | 一行语义 |
 | --- | --- |
-| `parse_yield_curve_batch` | 解析合成夹具 JSON → 曲线批（要求 `_synthetic = true`） |
+| `parse_yield_curve_batch` | 解析合成夹具 JSON → 曲线批（要求 `_synthetic = true` 且 `_note` 为非空白字符串） |
 | `TimePrecision` / `AvailabilityEvidence` / `PitEligibility` | 三元组枚举 |
 | `yield_curve_publication_semantics` | 恒返回 `(Date, Inferred, NotEligible)` |
 | `is_formal_pit_eligible` | 恒为 `false` |

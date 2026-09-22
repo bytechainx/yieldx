@@ -28,7 +28,7 @@ fn synthetic_document(points: usize) -> String {
         ));
     }
     format!(
-        r#"{{"_synthetic":true,"kind":"kernel_fixture","frequency":"daily","unit":"percent","points":[{body}]}}"#
+        r#"{{"_synthetic":true,"_note":"合成基准样本","kind":"kernel_fixture","frequency":"daily","unit":"percent","points":[{body}]}}"#
     )
 }
 
