@@ -1,0 +1,21 @@
+{
+  "_synthetic": true,
+  "_note": "本文件为特性 005 自拟的合成样本，不是真实源数据，不构成任何证据；它是**负向样本**：派生点未声明任何输入身份，解析 MUST 失败。",
+  "kind": "kernel_fixture",
+  "frequency": "daily",
+  "unit": "percent",
+  "points": [
+    {
+      "source": "us_treasury_yield",
+      "series": "breakeven_spread",
+      "currency": "USD",
+      "valuation_date": "2026-08-14",
+      "maturity": "10Y",
+      "curve_kind": "real",
+      "rate_percent": 2.15,
+      "origin": "derived",
+      "convention": "act365f",
+      "derived_from": []
+    }
+  ]
+}
