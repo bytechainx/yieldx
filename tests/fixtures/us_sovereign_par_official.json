@@ -1,0 +1,42 @@
+{
+  "_synthetic": true,
+  "_note": "本文件为特性 005 自拟的合成样本，不是真实源数据，不构成任何证据。",
+  "kind": "kernel_fixture",
+  "frequency": "daily",
+  "unit": "percent",
+  "points": [
+    {
+      "source": "us_treasury_yield",
+      "series": "par_yield",
+      "currency": "USD",
+      "valuation_date": "2026-08-14",
+      "maturity": "2Y",
+      "curve_kind": "nominal",
+      "rate_percent": 3.92,
+      "origin": "official",
+      "convention": "act365f"
+    },
+    {
+      "source": "us_treasury_yield",
+      "series": "par_yield",
+      "currency": "USD",
+      "valuation_date": "2026-08-14",
+      "maturity": "10Y",
+      "curve_kind": "nominal",
+      "rate_percent": 4.25,
+      "origin": "official",
+      "convention": "act365f"
+    },
+    {
+      "source": "us_treasury_yield",
+      "series": "par_yield",
+      "currency": "USD",
+      "valuation_date": "2026-08-14",
+      "maturity": "30Y",
+      "curve_kind": "nominal",
+      "missing_reason": "not_published_yet",
+      "origin": "official",
+      "convention": "act365f"
+    }
+  ]
+}
