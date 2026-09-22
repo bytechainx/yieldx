@@ -93,6 +93,14 @@ impl YieldCurvePoint {
 /// - `origin = Official` 却声明了派生输入 → [`YieldCurveError::SemanticallyRejected`]
 /// - 取值为 `NaN` 或无穷 → [`YieldCurveError::Invalid`]
 pub fn validate_curve_point(point: &YieldCurvePoint) -> YieldCurveResult<()> {
+    let date = point.identity.valuation_date;
+    crate::value::Date::new(date.year, date.month, date.day)?;
+    if let Some(inputs) = &point.derived_from {
+        for input in inputs {
+            let date = input.valuation_date;
+            crate::value::Date::new(date.year, date.month, date.day)?;
+        }
+    }
     match point.origin {
         YieldCurvePointOrigin::Derived => match &point.derived_from {
             Some(inputs) if !inputs.is_empty() => {}
@@ -361,5 +369,28 @@ mod tests {
         .expect("不同期限可共存");
         assert_eq!(batch.len(), 3);
         assert!(validate_curve_batch(batch.points()).is_ok());
+    }
+
+    #[test]
+    fn adversarial_public_dates_are_revalidated_in_points_and_inputs() {
+        let bad = Date {
+            year: 2026,
+            month: 2,
+            day: 30,
+        };
+        let mut point = official(YieldCurveTenor::Y10, 1.0);
+        point.identity.valuation_date = bad;
+        assert!(validate_curve_point(&point).is_err());
+        assert!(YieldCurveBatch::new(vec![point], Frequency::Daily, Unit::Percent).is_err());
+        let mut input = identity(YieldCurveTenor::Y2);
+        input.valuation_date = bad;
+        assert!(YieldCurvePoint::new(
+            identity(YieldCurveTenor::Y10),
+            YieldCurveRate::Present(1.0),
+            YieldCurvePointOrigin::Derived,
+            YieldCurveConvention::new("SYNTH").unwrap(),
+            Some(vec![input])
+        )
+        .is_err());
     }
 }

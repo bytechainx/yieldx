@@ -21,7 +21,7 @@
 | 项 | 一行语义 |
 | --- | --- |
 | `Date::parse` | 严格 ISO `YYYY-MM-DD` 的日期身份（含闰年校验） |
-| `Period::parse` | `YYYY` / `YYYY-MM` / `YYYY-Qn` / `YYYY-MM-DD` 四种期间形态 |
+| `Period::parse` | `YYYY` / `YYYY-MM` / `YYYY-Qn` / `YYYY-MM-DD` 四种期间形态；年份统一为 1000–9999 |
 | `Frequency` | 观测频率（7 值） |
 | `Unit` | 源侧单位（`Percent` / `BasisPoint` / `Undeclared`） |
 | `YieldCurveTenor` / `TENOR_CATALOG` | 11 个标准期限；`parse` / `months` / `label`，带排序语义 |
@@ -38,7 +38,7 @@
 
 | 项 | 一行语义 |
 | --- | --- |
-| `validate_curve_point` | 校验单点（派生完整性 + 取值有限性） |
+| `validate_curve_point` | 校验单点（自身与派生输入日期 + 派生完整性 + 取值有限性） |
 | `validate_curve_batch` | 校验候选切片（逐点 + 批内 `canonical_key` 唯一） |
 | `receive_routed_batch` | 接收上游路由来的曲线点并做批校验（不拉取） |
 | `kernel_owns` | kernel 能力判定（只拥有 L0 值对象与批校验） |
