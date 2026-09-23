@@ -48,3 +48,9 @@ panic = "deny"
 unreachable = "deny"
 todo = "deny"
 unimplemented = "deny"
+
+[package.metadata.bytechainx]
+module_id = "yieldx"
+owner = "bytechainx"
+role = "kernel"
+semantic_contract = "docs/标准.md"
