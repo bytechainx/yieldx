@@ -2,7 +2,7 @@
 name = "yieldx"
 version = "0.1.2"
 edition = "2021"
-rust-version = "1.71"
+rust-version = "1.77"
 description = "收益率曲线 kernel 的 L0 值对象与批校验：期限 / 曲线种类 / 惯例 / 曲线点身份 / 官方与派生二分 / 批内身份唯一"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/bytechainx/yieldx"
