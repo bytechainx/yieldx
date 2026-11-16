@@ -40,7 +40,7 @@ cargo package --no-verify
 ## 开发约定
 
 - 注释、文档、错误消息使用**简体中文**；标识符保持英文。
-- MSRV 为 Rust 1.71（由依赖图推导，见 `CONTEXT.md`），edition 2021。
+- MSRV 为 Rust 1.77（由依赖图推导，见 `CONTEXT.md`），edition 2021。
 - 错误模型统一为 `YieldCurveError`（thiserror 风格，`#[non_exhaustive]`）+ `YieldCurveErrorKind`；
   禁止公共 API 返回 `String` / `anyhow::Error`。
 - 不在库代码里裸 `unwrap()` / `expect()` / `panic!` / `println!`

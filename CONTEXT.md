@@ -51,13 +51,13 @@ _Avoid_: 补 0 / 补前值 / 线性插值补洞（静默填充会伪造源事实
 | --- | --- | --- |
 | `serde` / `serde_core` | 1.0.229 | 1.56 |
 | `serde_derive` / `proc-macro2` / `quote` / `syn` | 1.0.229 / 1.0.107 / 1.0.47 / 3.0.6 | 1.71 |
-| `serde_json` | 1.0.151 | 1.71 |
-| `thiserror` / `thiserror-impl` | 2.0.20 | 1.71 |
+| `serde_json` | 1.0.154 | 1.71 |
+| `thiserror` / `thiserror-impl` | 2.0.21 | 1.77 |
 | `itoa` | 1.0.18 | 1.68 |
 | `memchr` | 2.8.3 | 1.61 |
 | `ryu` / `unicode-ident` / `zmij` | 1.0.23 / 1.0.26 / 1.0.23 | 1.71 |
 
-**最大值 = 1.71**，故本 crate 声明 `rust-version = "1.71"`（不得照抄兄弟仓）。
+**最大值 = 1.77**（`thiserror` / `thiserror-impl` 2.0.21 声明 `rust_version` 1.77），故本 crate 声明 `rust-version = "1.77"`（2026-11-16 复核；不得照抄兄弟仓）。
 本 crate 无 dev-dependency 之外的额外依赖，无 `path` 依赖。
 
 ## 已知缺口
